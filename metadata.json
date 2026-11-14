@@ -1,0 +1,30 @@
+{
+  "best_model": "Linear Regression",
+  "selection_metric": "5-fold training CV RMSE (lower is better)",
+  "random_state": 42,
+  "test_size": 0.2,
+  "n_rows_after_exact_deduplication": 9873,
+  "n_features": 5,
+  "feature_names": [
+    "Hours Studied",
+    "Previous Scores",
+    "Extracurricular Activities",
+    "Sleep Hours",
+    "Sample Question Papers Practiced"
+  ],
+  "target": "Performance Index",
+  "python_version": "3.13.5",
+  "scikit_learn_version": "1.8.0",
+  "pandas_version": "2.2.3",
+  "numpy_version": "2.3.5",
+  "test_metrics": {
+    "model": "Linear Regression",
+    "cv_mae_mean": 1.6185420106589636,
+    "cv_rmse_mean": 2.037734534580522,
+    "cv_r2_mean": 0.9887094304383652,
+    "test_mae": 1.6469703984255568,
+    "test_mse": 4.305900938538475,
+    "test_rmse": 2.0750664901488034,
+    "test_r2": 0.9884301209927054
+  }
+}
