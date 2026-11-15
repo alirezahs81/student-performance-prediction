@@ -23,3 +23,25 @@ jobs:
           pip install -r requirements.txt
       - name: Run tests
         run: python -m pytest -q
+
+  robustness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run 30-split robustness evaluation on the project dataset
+        run: python -m src.robustness --n-splits 30 --random-state-start 0 --output-dir reports/robustness-run
+      - name: Upload robustness reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: student-performance-robustness-reports
+          path: reports/robustness-run/
+          if-no-files-found: error
+          retention-days: 30
