@@ -78,10 +78,12 @@ student-performance-prediction/
 │   ├── data.py
 │   ├── pipeline.py
 │   ├── predict.py
+│   ├── robustness.py
 │   └── train.py
 ├── tests/
 │   ├── conftest.py
-│   └── test_project.py
+│   ├── test_project.py
+│   └── test_robustness.py
 ├── app.py
 ├── requirements.txt
 └── README.md
@@ -122,7 +124,7 @@ Run a repeated holdout evaluation of the selected Linear Regression pipeline:
 python -m src.robustness
 ```
 
-The command uses 30 independent 80/20 random splits (seeds 0–29), removes exact duplicate rows before splitting, and fits a fresh preprocessing + regression pipeline on each training partition. It reports MAE, RMSE, and R² for every split, plus mean, sample standard deviation, minimum, and maximum. Outputs are written to `reports/robustness_seed_results.csv`, `reports/robustness_summary.json`, `reports/robustness_metric_distributions.png`, and `reports/robustness_metrics_by_seed.png`. Use `--n-splits` and `--random-state-start` to change the number and range of seeds; use `--no-plots` to skip figures. This is a stability check within the supplied dataset, not external validation.
+The command uses 30 independent 80/20 random splits (seeds 0–29), removes exact duplicate rows before splitting, and fits a fresh preprocessing + regression pipeline on each training partition. It reports MAE, RMSE, and R² for every split, plus mean, sample standard deviation, minimum, and maximum. Outputs are written to `reports/robustness_seed_results.csv`, `reports/robustness_summary.json`, `reports/robustness_metric_distributions.png`, and `reports/robustness_metrics_by_seed.png`. Use `--n-splits` and `--random-state-start` to change the number and range of seeds; use `--no-plots` to skip figures. This is a stability check within the supplied dataset, not external validation. **Important evaluation caveat:** Linear Regression was selected earlier using cross-validation on the project's original training partition. The repeated holdout splits below are then drawn from the full deduplicated dataset, so some observations appearing in a repeated holdout test partition may have participated in that earlier model-selection process. The estimator is held fixed during this robustness run, and each split's preprocessing and fitting use only its training partition; however, these repeated-holdout metrics should be interpreted as conditional stability diagnostics, not as a fully independent, unbiased estimate of generalization after model selection.
 
 ## Predict from Python
 
