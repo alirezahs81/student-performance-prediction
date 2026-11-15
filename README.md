@@ -114,7 +114,17 @@ python -m src.train
 
 This command re-creates `models/best_pipeline.joblib`, `models/metadata.json`, and `reports/model_comparison.csv` from the included CSV.
 
-## Robustness evaluation\n\nRun a repeated holdout evaluation of the selected Linear Regression pipeline:\n\n```bash\npython -m src.robustness\n```\n\nThe command uses 30 independent 80/20 random splits (seeds 0–29), removes exact duplicate rows before splitting, and fits a fresh preprocessing + regression pipeline on each training partition. It reports MAE, RMSE, and R² for every split, plus mean, sample standard deviation, minimum, and maximum. Outputs are written to `reports/robustness_seed_results.csv`, `reports/robustness_summary.json`, `reports/robustness_metric_distributions.png`, and `reports/robustness_metrics_by_seed.png`. Use `--n-splits` and `--random-state-start` to change the number and range of seeds; use `--no-plots` to skip figures. This is a stability check within the supplied dataset, not external validation.\n\n## Predict from Python
+## Robustness evaluation
+
+Run a repeated holdout evaluation of the selected Linear Regression pipeline:
+
+```bash
+python -m src.robustness
+```
+
+The command uses 30 independent 80/20 random splits (seeds 0–29), removes exact duplicate rows before splitting, and fits a fresh preprocessing + regression pipeline on each training partition. It reports MAE, RMSE, and R² for every split, plus mean, sample standard deviation, minimum, and maximum. Outputs are written to `reports/robustness_seed_results.csv`, `reports/robustness_summary.json`, `reports/robustness_metric_distributions.png`, and `reports/robustness_metrics_by_seed.png`. Use `--n-splits` and `--random-state-start` to change the number and range of seeds; use `--no-plots` to skip figures. This is a stability check within the supplied dataset, not external validation.
+
+## Predict from Python
 
 ```python
 from src.predict import predict
