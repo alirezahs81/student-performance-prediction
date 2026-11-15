@@ -83,9 +83,13 @@ def run_robustness(
         "estimator": "LinearRegression",
         "protocol": "Repeated random 80/20 holdout; a fresh sklearn Pipeline is fitted per split.",
         "selection_note": (
-            "The estimator was fixed in advance because Linear Regression was selected "
-            "by the project's training cross-validation. This robustness run does not "
-            "perform model selection on the holdout partitions."
+            "Linear Regression was selected earlier by cross-validation on the original "
+            "training partition. Repeated holdouts are sampled from the full deduplicated "
+            "dataset, so some holdout test observations may have participated in that "
+            "earlier model-selection process. The estimator is fixed during this run and "
+            "each split's preprocessing and fitting use only its training partition; "
+            "therefore these metrics are conditional stability diagnostics, not a fully "
+            "independent unbiased estimate of generalization after model selection."
         ),
         "n_splits": int(n_splits),
         "random_state_start": int(random_state_start),
