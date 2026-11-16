@@ -110,7 +110,8 @@ student-performance-prediction/
 ├── reports/
 │   ├── eda_summary.json
 │   ├── model_comparison.csv
-│   └── model_cv_rmse.svg
+│   ├── model_cv_rmse.svg
+│   └── feature_correlations.svg
 ├── src/
 │   ├── data.py
 │   ├── pipeline.py
