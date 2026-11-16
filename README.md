@@ -82,7 +82,7 @@ Selected descriptive findings from `reports/eda_summary.json`:
 - `Sleep Hours` (r = 0.048) and practice papers (r = 0.043) have weak linear correlations.
 - Extracurricular participation is nearly balanced: 4,948 Yes and 5,052 No.
 
-Correlations are descriptive, not causal. The dataset documentation supplied with this repository does not explain how the target was constructed, so possible target-generation relationships cannot be independently ruled out. See the [EDA summary](reports/eda_summary.json) and [analysis notebook](notebooks/eda_and_model_analysis.ipynb).
+Correlations are descriptive, not causal. The dataset documentation supplied with this repository does not explain how the target was constructed, so possible target-generation relationships cannot be independently ruled out. ![Feature correlations with Performance Index](reports/feature_correlations.svg)\n\nSee the [EDA summary](reports/eda_summary.json) and [analysis notebook](notebooks/eda_and_model_analysis.ipynb).
 
 ## Methodology
 
