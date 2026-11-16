@@ -64,7 +64,7 @@ The current CI workflow also runs 30 reproducible 80/20 splits (seeds 0–29), f
 | RMSE | 2.05290 | 0.03253 | 1.98250 | 2.11897 |
 | R² | 0.98859 | 0.00047 | 0.98778 | 0.98950 |
 
-These repeated holdouts are **conditional stability diagnostics**, not a fully independent unbiased estimate after model selection: the estimator was selected earlier using CV on the original training partition, while repeated holdouts are sampled from the full deduplicated dataset. The workflow's uploaded reports are available from the [latest successful Actions run](https://github.com/alirezahs81/student-performance-prediction/actions/runs/43731577985).
+These repeated holdouts are **conditional stability diagnostics**, not a fully independent unbiased estimate after model selection: the estimator was selected earlier using CV on the original training partition, while repeated holdouts are sampled from the full deduplicated dataset. The workflow's uploaded reports are available from the [latest successful Actions run](https://github.com/alirezahs81/student-performance-prediction/actions/runs/43882227158).
 
 ## Dataset and exploratory analysis
 
