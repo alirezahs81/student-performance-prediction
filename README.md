@@ -19,6 +19,12 @@ A reproducible end-to-end machine-learning project that predicts a continuous **
 | Interface | Streamlit |
 | Automation | GitHub Actions: Python 3.11, 3.12, 3.13 + robustness job |
 
+## Live application demo
+
+The Streamlit interface was launched locally on Windows and used to generate a sample prediction. The screenshot below documents the running application; it is a demonstration, not an independently validated assessment.
+
+![Streamlit application screenshot](reports/student-performance-demo.png)
+
 ## Results
 
 The following values are recorded in the repository's `reports/model_comparison.csv` and `models/metadata.json`. They are not estimates invented for this README.
@@ -111,6 +117,7 @@ student-performance-prediction/
 │   ├── eda_summary.json
 │   ├── model_comparison.csv
 │   ├── model_cv_rmse.svg
+│   ├── student-performance-demo.png
 │   └── feature_correlations.svg
 ├── src/
 │   ├── data.py
