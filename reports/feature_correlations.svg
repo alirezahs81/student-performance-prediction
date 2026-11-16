@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" role="img" aria-labelledby="title desc">
+<title id="title">Feature correlation with Performance Index</title>
+<desc id="desc">Pearson correlations recorded in the EDA report: Previous Scores 0.915, Hours Studied 0.374, Sleep Hours 0.048, and Sample Question Papers Practiced 0.043.</desc>
+<rect width="1000" height="430" rx="20" fill="#f8fafc"/>
+<text x="48" y="55" fill="#0f172a" font-family="Arial,sans-serif" font-size="27" font-weight="700">Feature correlation with target</text>
+<text x="48" y="86" fill="#475569" font-family="Arial,sans-serif" font-size="16">Pearson r with Performance Index · descriptive, not causal</text>
+<g stroke="#dbe3ee"><path d="M390 120V350 M490 120V350 M590 120V350 M690 120V350 M790 120V350 M890 120V350"/></g>
+<g fill="#64748b" font-family="Arial,sans-serif" font-size="13" text-anchor="middle"><text x="390" y="375">0.0</text><text x="490" y="375">0.2</text><text x="590" y="375">0.4</text><text x="690" y="375">0.6</text><text x="790" y="375">0.8</text><text x="890" y="375">1.0</text></g>
+<g fill="#1e293b" font-family="Arial,sans-serif" font-size="16"><text x="48" y="160">Previous Scores</text><text x="48" y="215">Hours Studied</text><text x="48" y="270">Sleep Hours</text><text x="48" y="325">Sample Question Papers Practiced</text></g>
+<g><rect x="390" y="138" width="457.59" height="28" rx="6" fill="#0f766e"/><rect x="390" y="193" width="186.87" height="28" rx="6" fill="#0f766e"/><rect x="390" y="248" width="24.05" height="28" rx="6" fill="#64748b"/><rect x="390" y="303" width="21.63" height="28" rx="6" fill="#64748b"/></g>
+<g fill="#0f172a" font-family="Arial,sans-serif" font-size="15" font-weight="600"><text x="858" y="159">0.915</text><text x="587" y="214">0.374</text><text x="424" y="269">0.048</text><text x="422" y="324">0.043</text></g>
+<text x="48" y="410" fill="#64748b" font-family="Arial,sans-serif" font-size="12">Source: reports/eda_summary.json</text>
+</svg>
