@@ -13,11 +13,12 @@ A reproducible end-to-end machine-learning project that predicts a continuous **
 | Dataset | 10,000 rows; 9,873 after exact-duplicate removal |
 | Input features | 4 numeric + 1 categorical |
 | Candidate models | 7 regressors |
-| Validation | 5-fold shuffled CV on the training partition |
-| Holdout | 20%, fixed `random_state=42` |
-| Selected estimator | Linear Regression |
+| Primary model selection | 5-fold shuffled CV on the training partition |
+| Final holdout | 20%, fixed `random_state=42` |
+| Selected estimator | Linear Regression (current recorded training run) |
+| Robustness protocol | Nested repeated 80/20 holdouts: inner CV selection, outer holdout scoring |
 | Interface | Streamlit |
-| Automation | GitHub Actions: Python 3.11, 3.12, 3.13 + robustness job |
+| Automation | GitHub Actions: Python 3.11, 3.12, 3.13 + nested robustness job |
 
 ## Live application demo
 
@@ -40,7 +41,7 @@ The following values are recorded in the repository's `reports/model_comparison.
 
 ![Five-fold cross-validation RMSE comparison](reports/model_cv_rmse.svg)
 
-The seven candidates are compared below. CV RMSE is computed as the square root of the mean fold MSE; CV MAE and CV R² are arithmetic means of their fold scores.
+The seven candidates are compared below. CV RMSE is computed as the square root of the mean fold MSE; CV MAE and CV R² are arithmetic means of their fold scores. The selected estimator is chosen using training-partition CV RMSE only; holdout metrics are reported for transparency and are not used to select the model.
 
 | Model | CV RMSE | Test RMSE | Test R² |
 |---|---:|---:|---:|
@@ -52,19 +53,21 @@ The seven candidates are compared below. CV RMSE is computed as the square root 
 | Random Forest | 2.2744 | 2.3016 | 0.9858 |
 | Extra Trees | 2.3555 | 2.3717 | 0.9849 |
 
-Linear Regression has the lowest recorded CV RMSE, although the differences among Linear Regression, Lasso, and Ridge are extremely small. The high R² must be interpreted cautiously because the dataset's target-generation process is undocumented; strong in-dataset performance does not establish external validity.
+The differences among Linear Regression, Lasso, and Ridge are extremely small. The high R² must be interpreted cautiously because the dataset's target-generation process is undocumented; strong in-dataset performance does not establish external validity.
 
-### Repeated-holdout stability check
+### Nested repeated-holdout evaluation
 
-The current CI workflow also runs 30 reproducible 80/20 splits (seeds 0–29), fitting a fresh preprocessing/model pipeline per split. The latest successful GitHub Actions run recorded:
+The robustness workflow now performs nested model selection rather than repeatedly evaluating a model selected earlier on overlapping data:
 
-| Metric | Mean | Standard deviation | Minimum | Maximum |
-|---|---:|---:|---:|---:|
-| MAE | 1.63035 | 0.02762 | 1.56803 | 1.69119 |
-| RMSE | 2.05290 | 0.03253 | 1.98250 | 2.11897 |
-| R² | 0.98859 | 0.00047 | 0.98778 | 0.98950 |
+1. Create an outer 80/20 train/test split for each seed.
+2. Compare all seven candidate estimators using 3-fold CV on the outer training partition only.
+3. Fit the selected preprocessing/model pipeline on the complete outer training partition.
+4. Score once on that split's untouched outer test partition.
+5. Repeat for 10 deterministic outer splits (seeds 0–9).
 
-These repeated holdouts are **conditional stability diagnostics**, not a fully independent unbiased estimate after model selection: the estimator was selected earlier using CV on the original training partition, while repeated holdouts are sampled from the full deduplicated dataset. The workflow's uploaded reports are available from the [latest successful Actions run](https://github.com/alirezahs81/student-performance-prediction/actions/runs/43882227158).
+This estimates the performance of the **model-selection procedure**, not just a fixed Linear Regression estimator. Preprocessing is inside each sklearn Pipeline and is refitted within every inner fold. Outer test observations are not used for inner selection.
+
+The workflow uploads per-split metrics, aggregate summaries, and plots as a GitHub Actions artifact. Summary statistics include mean, standard deviation, min/max, and empirical 2.5th/97.5th percentiles. These percentiles describe the observed repeated-split score distribution; **they are not confidence intervals**, because outer holdouts overlap and their scores are dependent. See the [latest GitHub Actions runs](https://github.com/alirezahs81/student-performance-prediction/actions).
 
 ## Dataset and exploratory analysis
 
@@ -88,9 +91,15 @@ Selected descriptive findings from `reports/eda_summary.json`:
 - `Sleep Hours` (r = 0.048) and practice papers (r = 0.043) have weak linear correlations.
 - Extracurricular participation is nearly balanced: 4,948 Yes and 5,052 No.
 
-Correlations are descriptive, not causal. The dataset documentation supplied with this repository does not explain how the target was constructed, so possible target-generation relationships cannot be independently ruled out. ![Feature correlations with Performance Index](reports/feature_correlations.svg)
+Correlations are descriptive, not causal. The dataset documentation supplied with this repository does not explain how the target was constructed, so possible target-generation relationships cannot be independently ruled out.
+
+![Feature correlations with Performance Index](reports/feature_correlations.svg)
 
 See the [EDA summary](reports/eda_summary.json) and [analysis notebook](notebooks/eda_and_model_analysis.ipynb).
+
+### Dataset provenance and limitations
+
+The CSV is distributed under the name `Student_Performance.csv` and is commonly associated with the [Student Performance dataset on Kaggle](https://www.kaggle.com/datasets/nikhil7280/student-performance-multiple-linear-regression). This repository does not contain a source-side data card, collection protocol, license statement, sampling frame, or explanation of how `Performance Index` was generated. The Kaggle association is therefore a traceable lead, **not independent verification of the original data provenance or licensing**. Before redistribution or real-world use, verify the source owner's terms and document the original source, license, collection process, and target definition. Some secondary educational references describe similarly named copies as synthetic; without an authoritative source statement, this project does not assert that the supplied file is confirmed synthetic.
 
 ## Methodology
 
@@ -98,8 +107,9 @@ See the [EDA summary](reports/eda_summary.json) and [analysis notebook](notebook
 2. Make one reproducible 80/20 train/test split (`random_state=42`).
 3. Put preprocessing inside an sklearn `Pipeline` so it is fitted only on each training fold: median imputation and standard scaling for numeric features; most-frequent imputation and one-hot encoding for the categorical feature.
 4. Compare seven regressors using 5-fold shuffled `KFold` cross-validation on the training partition.
-5. Select the model with the lowest mean CV RMSE and evaluate it on the untouched holdout partition.
+5. Select the model with the lowest mean CV RMSE and evaluate it on the untouched holdout partition. Holdout scores are not used for model selection.
 6. Persist the complete preprocessing + estimator pipeline in `models/best_pipeline.joblib`.
+7. Separately, use nested repeated holdouts to evaluate the entire candidate-selection procedure, with inner CV restricted to each outer training partition.
 
 No target-informed preprocessing or feature selection is performed. No automatic outlier deletion is applied.
 
@@ -161,13 +171,13 @@ python -m src.train
 
 This recreates `models/best_pipeline.joblib`, `models/metadata.json`, and `reports/model_comparison.csv` from the included dataset.
 
-## Run robustness evaluation
+## Run nested robustness evaluation
 
 ```bash
 python -m src.robustness
 ```
 
-By default, this runs 30 repeated random 80/20 splits (seeds 0–29) and writes per-split metrics, a summary, and two plots under `reports/`. Options include `--n-splits`, `--random-state-start`, `--output-dir`, and `--no-plots`. Interpret these outputs as within-dataset stability diagnostics, subject to the model-selection caveat described above.
+By default, this runs 10 repeated random 80/20 outer splits (seeds 0–9), with 3-fold inner CV to select among the same seven candidate models used by training. It writes per-split metrics, a summary, and two plots under `reports/`. Options include `--n-splits`, `--inner-splits`, `--random-state-start`, `--output-dir`, and `--no-plots`. Empirical score percentiles are descriptive ranges, not confidence intervals.
 
 ## Predict from Python
 
@@ -203,16 +213,18 @@ Run tests locally:
 python -m pytest -q
 ```
 
-The GitHub Actions workflow at `.github/workflows/ci.yml` runs the test suite on Python 3.11, 3.12, and 3.13 for pushes, pull requests, and manual dispatch. A separate Python 3.12 job executes the 30-split robustness evaluation and uploads its reports as an Actions artifact.
+The GitHub Actions workflow at `.github/workflows/ci.yml` runs the test suite on Python 3.11, 3.12, and 3.13 for pushes, pull requests, and manual dispatch. A separate Python 3.12 job runs the nested repeated-holdout evaluation and uploads its reports as an Actions artifact. This workflow runs automatically on pushes; no manual dispatch is required for these changes.
 
 [View GitHub Actions](https://github.com/alirezahs81/student-performance-prediction/actions)
 
 ## Limitations and next steps
 
-- Dataset provenance, sampling design, and target construction are not documented.
+- Dataset provenance, sampling design, licensing, and target construction remain unverified.
 - No external validation dataset was supplied; performance is measured within this dataset's distribution.
+- Nested repeated holdouts reduce model-selection optimism within each split, but overlapping outer test partitions mean the resulting split-level metrics are dependent.
+- Empirical percentiles are not inferential confidence intervals.
 - The high in-dataset R² does not establish causal relationships or generalization to other student populations.
 - The saved model is tied to its training feature schema and library version.
 - The app is a demonstration, not a substitute for educator judgment or validated assessment.
 
-Potential future work includes obtaining a documented independent dataset, defining a pre-registered evaluation protocol, and assessing subgroup performance and calibration before considering any real-world educational use.
+Potential future work includes obtaining a documented independent dataset, verifying its license and provenance, defining a pre-registered evaluation protocol, and assessing subgroup performance and calibration before considering any real-world educational use.
