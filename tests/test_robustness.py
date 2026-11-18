@@ -27,7 +27,7 @@ def make_dataset(path):
     frame.to_csv(path, index=False)
 
 
-def test_nested_robustness_writes_reproducible_outputs(tmp_path):
+def test_nested_robustness_writes_expected_outputs(tmp_path):
     data_path = tmp_path / "sample.csv"
     output_dir = tmp_path / "reports"
     make_dataset(data_path)
